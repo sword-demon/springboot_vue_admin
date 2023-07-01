@@ -30,4 +30,6 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 npm i element-ui -S
 ```
 
+## 简易 layout 内容效果图
+
 ![img.png](./imgs/img.png)
