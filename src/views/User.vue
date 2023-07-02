@@ -106,6 +106,13 @@ export default {
         this.$message.error('请选择需要删除的数据');
       }
     },
+    exp() {
+      window.open('http://localhost:9093/user/export');
+    },
+    imp() {
+      this.$message.success('文件导入成功');
+      this.getPageData();
+    },
   },
 };
 </script>
@@ -144,8 +151,12 @@ export default {
                 <el-button slot="reference" :disabled="!disabledDelete" type="danger">批量删除
                 </el-button>
             </el-popconfirm>
-            <el-button class="ml-5" type="success">导入</el-button>
-            <el-button type="warning">导出</el-button>
+            <el-upload :on-success="imp" :show-file-list="false" accept="xlsx"
+                       action="http://localhost:9093/user/import"
+                       style="display: inline-block">
+                <el-button class="ml-5" type="success">导入</el-button>
+            </el-upload>
+            <el-button class="ml-5" type="warning" @click="exp">导出</el-button>
         </div>
         <el-table :data="tableData" border stripe @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55"></el-table-column>
