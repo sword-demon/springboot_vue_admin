@@ -84,23 +84,25 @@
                                 <el-input clearable placeholder="请输入地址" prefix-icon="el-icon-search"/>
                             </el-form-item>
                             <el-form-item>
-                                <el-button class="ml-5" type="primary">搜索</el-button>
+                                <el-button class="ml-5" type="primary" @click="search">搜索</el-button>
                             </el-form-item>
                         </el-form>
                     </div>
                     <div style="margin: 10px 0">
                         <el-button type="primary">新增</el-button>
-                        <el-button type="danger">批量删除</el-button>
+                        <el-button disabled type="danger">批量删除</el-button>
                         <el-button type="success">导入</el-button>
                         <el-button type="warning">导出</el-button>
                     </div>
                     <el-table :data="tableData" :header-cell-style="{color: '#fff', backgroundColor: '#3E8EF7'}"
                               border stripe>
-                        <el-table-column label="日期" prop="date" width="140">
-                        </el-table-column>
-                        <el-table-column label="姓名" prop="name" width="120">
+                        <el-table-column label="ID" prop="id" width="80"></el-table-column>
+                        <el-table-column label="账号" prop="username" width="140"></el-table-column>
+                        <el-table-column label="昵称" prop="nickname" width="120">
                         </el-table-column>
                         <el-table-column label="地址" prop="address"></el-table-column>
+                        <el-table-column label="手机号码" prop="phone"></el-table-column>
+                        <el-table-column label="邮箱" prop="email"></el-table-column>
                         <el-table-column label="操作">
                             <template v-slot="scope">
                                 <el-button type="primary">编辑</el-button>
@@ -111,9 +113,9 @@
                     <div style="padding: 10px 0">
                         <el-pagination
                                 :current-page="currentPage"
-                                :page-size="10"
+                                :page-size="pageSize"
                                 :page-sizes="[5, 10, 15, 20]"
-                                :total="400"
+                                :total="total"
                                 layout="total, sizes, prev, pager, next, jumper"
                                 @size-change="handleSizeChange"
                                 @current-change="handleCurrentChange">
@@ -129,13 +131,8 @@
 export default {
   name: 'HomeView',
   data() {
-    const item = {
-      date: '2016-05-02',
-      name: '王小虎',
-      address: '上海市普陀区金沙江路 1518 弄',
-    };
     return {
-      tableData: Array(20).fill(item),
+      tableData: [],
       // 收缩按钮的图标
       collapseBtnClass: 'el-icon-s-fold',
       // 是否收缩
@@ -143,7 +140,13 @@ export default {
       // 侧边栏宽度
       sideWidth: 200,
       currentPage: 1,
+      pageSize: 5,
+      total: 0,
     };
+  },
+  created() {
+    // 请求分页查询数据
+    this.getPageData();
   },
   methods: {
     collapse() {
@@ -155,9 +158,24 @@ export default {
       }
       this.collapseBtnClass = this.collapseBtnClass === 'el-icon-s-fold' ? 'el-icon-s-unfold' : 'el-icon-s-fold';
     },
-    handleSizeChange() {
+    handleSizeChange(pageSize) {
+      this.pageSize = pageSize;
+      this.getPageData();
     },
-    handleCurrentChange() {
+    handleCurrentChange(pageNum) {
+      this.currentPage = pageNum;
+      this.getPageData();
+    },
+    getPageData() {
+      fetch(`http://localhost:9093/user/page?pageNum=${ this.currentPage }&pageSize=${ this.pageSize }`).
+          then(res => res.json()).
+          then(res => {
+            this.total = res.total;
+            this.tableData = res.data;
+          });
+    },
+    search() {
+      this.getPageData();
     },
   },
 };
