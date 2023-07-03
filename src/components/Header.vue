@@ -6,12 +6,19 @@ export default {
     collapse: Function,
   },
   data() {
-    return {};
+    return {
+      user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : {},
+    };
   },
   methods: {
     isCurrentRoute(path) {
       // 检查当前路由是否与指定路径一致
       return this.$route.path === path;
+    },
+    logout() {
+      localStorage.removeItem('user');
+      this.$router.push('/login');
+      this.$message.success('退出成功');
     },
   },
   computed: {
@@ -48,10 +55,15 @@ export default {
         </div>
         <div style="text-align: right;font-size: 12px; width: 200px;cursor: pointer">
             <el-dropdown>
-                <span>无解</span>
-                <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>个人信息</el-dropdown-item>
-                    <el-dropdown-item>退出</el-dropdown-item>
+                <!-- 还可以再放个头像-->
+                <span>{{ user.username }}</span>
+                <el-dropdown-menu slot="dropdown" style="width: 100px;text-align: center">
+                    <el-dropdown-item style="font-size: 14px;padding: 5px 0">
+                        <router-link style="text-decoration: none;" to="/person">个人信息</router-link>
+                    </el-dropdown-item>
+                    <el-dropdown-item style="font-size: 14px;padding: 5px 0">
+                        <span style="text-decoration: none;" @click="logout">退出</span>
+                    </el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
         </div>

@@ -4,7 +4,9 @@ import Vuex from 'vuex';
 Vue.use(Vuex);
 
 const index = new Vuex.Store({
-  state: {},
+  state: {
+    userInfo: [],
+  },
   mutations: {},
 });
 

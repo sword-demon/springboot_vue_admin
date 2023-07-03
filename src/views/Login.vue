@@ -26,13 +26,22 @@ export default {
           this.$message.error('请求校验不通过');
         } else {
           this.$http.post('/user/login', this.user).then(res => {
-            console.log(res);
-            if (!res) {
-              this.$message.error('用户或密码错误');
-              this.user = {};
-            } else {
+            if (res.code === '200') {
+              // 存储用户信息
+              localStorage.setItem('user', JSON.stringify(res.data));
+              this.$notify({
+                message: '登录成功',
+                duration: 2000,
+                type: 'success',
+              });
               this.$router.push('/');
+            } else {
+              this.$message.error(res.msg);
+              this.user = {};
             }
+          }).catch(err => {
+            console.log(err);
+            this.$message.error('请求失败，网络异常或系统异常');
           });
         }
       });
