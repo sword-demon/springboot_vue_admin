@@ -7,7 +7,11 @@ const request = axios.create({
 
 request.interceptors.request.use(config => {
   config.headers['Content-Type'] = 'application/json;charset=utf-8';
-  // config.headers['token'] = user.token;
+  let user = localStorage.getItem('user') ?
+      JSON.parse(localStorage.getItem('user')) : null;
+  if (user && user.token !== undefined) {
+    config.headers['token'] = user.token;
+  }
   return config;
 }, error => {
   return Promise.reject(error);

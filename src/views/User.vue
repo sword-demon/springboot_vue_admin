@@ -42,11 +42,16 @@ export default {
         pageSize: this.pageSize,
         username: this.username,
       };
-      this.$http.get('/user/page', {params: pageParam}).
-          then(resp => {
-            this.total = resp.total;
-            this.tableData = resp.records;
-          });
+      this.$http.get('/user/page', {params: pageParam}).then(resp => {
+        if (resp.code === '200') {
+          this.total = resp.data.total;
+          this.tableData = resp.data.records;
+        } else {
+          this.$message.error(resp.msg);
+        }
+      }).catch(err => {
+        this.$message.error(err);
+      });
     },
     search() {
       this.getPageData(this.username);
