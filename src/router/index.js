@@ -45,6 +45,14 @@ const routes = [
         },
         component: () => import('@/views/User.vue'),
       },
+      {
+        path: '/sys/role',
+        name: 'Role',
+        meta: {
+          title: '角色管理',
+        },
+        component: () => import('@/views/Role.vue'),
+      },
     ],
   },
   {
