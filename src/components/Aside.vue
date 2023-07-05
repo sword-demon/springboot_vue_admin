@@ -42,6 +42,10 @@ export default {
                 <i class="el-icon-user"></i>
                 <span slot="title">角色管理</span>
             </el-menu-item>
+            <el-menu-item index="/sys/menu">
+                <i class="el-icon-menu"></i>
+                <span slot="title">菜单管理</span>
+            </el-menu-item>
         </el-submenu>
     </el-menu>
 </template>

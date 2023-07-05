@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'Role',
+  name: 'Menu',
   created() {
     // 请求分页查询数据
     this.getPageData(this.name);
@@ -16,52 +16,13 @@ export default {
       form: {
         id: 0,
         name: '',
+        path: '',
+        icon: '',
         description: '',
       },
       // 多选框
       multipleSelection: [],
       disabledDelete: false,
-      dialogMenuVisible: false,
-      menuData: [
-        {
-          id: 1,
-          label: '一级 1',
-          children: [
-            {
-              id: 4,
-              label: '二级 1-1',
-              children: [
-                {
-                  id: 9,
-                  label: '三级 1-1-1',
-                }, {
-                  id: 10,
-                  label: '三级 1-1-2',
-                }],
-            }],
-        }, {
-          id: 2,
-          label: '一级 2',
-          children: [
-            {
-              id: 5,
-              label: '二级 2-1',
-            }, {
-              id: 6,
-              label: '二级 2-2',
-            }],
-        }, {
-          id: 3,
-          label: '一级 3',
-          children: [
-            {
-              id: 7,
-              label: '二级 3-1',
-            }, {
-              id: 8,
-              label: '二级 3-2',
-            }],
-        }],
     };
   },
   methods: {
@@ -79,7 +40,7 @@ export default {
         pageSize: this.pageSize,
         name: this.name,
       };
-      this.$http.get('/role/page', {params: pageParam}).then(resp => {
+      this.$http.get('/menu/page', {params: pageParam}).then(resp => {
         if (resp.code === '200') {
           this.total = resp.data.total;
           this.tableData = resp.data.records;
@@ -101,12 +62,8 @@ export default {
       this.dialogFormVisible = true;
       this.form = {};
     },
-    selectMenu(roleId) {
-      this.dialogMenuVisible = true;
-
-    },
     submit() {
-      this.$http.post('/role', this.form).then(resp => {
+      this.$http.post('/menu', this.form).then(resp => {
         console.log(resp);
         if (this.form.id) {
           this.$message.success('修改成功');
@@ -123,7 +80,7 @@ export default {
       this.dialogFormVisible = true;
     },
     handleDelete(id) {
-      this.$http.delete('/role/' + id).then(resp => {
+      this.$http.delete('/menu/' + id).then(resp => {
         console.log(resp);
         this.$message.success('删除成功');
         this.getPageData();
@@ -151,16 +108,6 @@ export default {
         this.$message.error('请选择需要删除的数据');
       }
     },
-    exp() {
-      window.open('http://localhost:9093/role/export');
-    },
-    imp() {
-      this.$message.success('文件导入成功');
-      this.getPageData();
-    },
-    handleCheckChange(data, checked, indeterminate) {
-      console.log(data, checked, indeterminate);
-    },
   },
 };
 </script>
@@ -170,7 +117,7 @@ export default {
         <div style="margin: 10px 0">
             <el-form :inline="true">
                 <el-form-item>
-                    <el-input v-model="name" clearable placeholder="请输入角色名称"
+                    <el-input v-model="name" clearable placeholder="请输入菜单名称"
                               prefix-icon="el-icon-search"/>
                 </el-form-item>
                 <el-form-item>
@@ -197,12 +144,12 @@ export default {
         <el-table :data="tableData" border stripe @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column label="ID" prop="id" width="80"></el-table-column>
-            <el-table-column label="角色名称" prop="name"></el-table-column>
-            <el-table-column label="角色描述" prop="description">
-            </el-table-column>
+            <el-table-column label="菜单名称" prop="name"></el-table-column>
+            <el-table-column label="路径" prop="path"></el-table-column>
+            <el-table-column label="图标" prop="icon"></el-table-column>
+            <el-table-column label="描述" prop="description"></el-table-column>
             <el-table-column label="操作">
                 <template v-slot="scope">
-                    <el-button type="success" @click="selectMenu(scope.row.id)">分配权限</el-button>
                     <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button>
                     <el-popconfirm
                             cancel-button-text='取消'
@@ -235,26 +182,20 @@ export default {
         <el-dialog :visible.sync="dialogFormVisible" title="添加角色信息">
             <el-form :model="form">
                 <el-form-item label="名称" label-width="120px">
-                    <el-input v-model="form.name" autocomplete="off" clearable placeholder="角色名称"></el-input>
+                    <el-input v-model="form.name" autocomplete="off" clearable placeholder="菜单名称"></el-input>
+                </el-form-item>
+                <el-form-item label="路径" label-width="120px">
+                    <el-input v-model="form.path" clearable placeholder="路径"/>
+                </el-form-item>
+                <el-form-item label="图标" label-width="120px">
+                    <el-input v-model="form.icon" clearable placeholder="图标"/>
                 </el-form-item>
                 <el-form-item label="描述" label-width="120px">
-                    <el-input v-model="form.description" clearable placeholder="角色描述"/>
+                    <el-input v-model="form.description" clearable placeholder="描述"/>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="submit">确 定</el-button>
-            </div>
-        </el-dialog>
-
-        <el-dialog :visible.sync="dialogMenuVisible" title="权限分配">
-            <el-tree
-                    :data="menuData"
-                    show-checkbox
-                    @check-change="handleCheckChange">
-            </el-tree>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogMenuVisible = false">取 消</el-button>
                 <el-button type="primary" @click="submit">确 定</el-button>
             </div>
         </el-dialog>
